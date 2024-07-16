@@ -1,0 +1,446 @@
+openapi: 3.0.0
+info:
+  title: Social network API
+  version: 1.0.0
+  description: API для social_network
+servers:
+  - url: http://socialnetwork.com/v1
+tags:
+  - name: posts
+    description: Посты
+  - name: comments
+    description: Комментарии и рейтинги постов
+  - name: subscriptions
+    description: Подписки
+  - name: messages
+    description: Сообщения
+  - name: feed
+    description: Лента
+  - name: topplaces
+    description: Топ-места
+paths:
+  /posts:
+    get:
+      tags:
+        - posts
+      summary: Получить все посты
+      responses:
+        '200':
+          description: Успешное получение списка постов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '417':
+          description: Expectation Failed
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - posts
+      summary: Создать новый пост
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPost'
+      responses:
+        '201':
+          description: Пост успешно создан
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
+  /posts/{raitingId}/raiting:
+    get:
+      tags:
+        - comments
+      summary: Получить рейтинг к посту
+      parameters:
+        - name: raitingId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение рейтинга
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Raiting'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      tags:
+        - comments
+      summary: Добавить комментарий к посту
+      parameters:
+        - name: raitingId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Raiting'
+      responses:
+        '201':
+          description: Комментарий успешно добавлен
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
+  /posts/{postId}/comments:
+    get:
+      tags:
+        - comments
+      summary: Получить комментарий к посту
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      tags:
+        - comments
+      summary: Добавить комментарий к посту
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewComment'
+      responses:
+        '201':
+          description: Комментарий успешно добавлен
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пост не найден
+        '500':
+          description: Внутренняя ошибка сервера
+  /users/{userId}/subscriptions:
+     post:
+      tags:
+        - subscriptions
+      summary: Подписаться на пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешная подписка на пользователя
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
+     delete:
+      tags:
+        - subscriptions
+      summary: Отписаться от пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешная отписка от пользователя
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
+  /users/{userId}/messages:
+    get:
+      tags:
+        - messages
+      summary: Получить сообщение пользователя
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешное получение сообщений
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
+    post:
+      tags:
+        - messages
+      summary: Отправить сообщение пользователю
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewMessage'
+      responses:
+        '201':
+          description: Сообщение успешно отправлено
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '404':
+          description: Пользователь не найден
+        '500':
+          description: Внутренняя ошибка сервера
+  /feed:
+    get:
+      tags:
+        - feed
+      summary: Получить ленту постов
+      responses:
+        '200':
+          description: Успешное получение ленты постов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
+  /top-places:
+    get:
+      tags:
+        - topplaces
+      summary: Получить ТОП места по странам и городам
+      responses:
+        '200':
+          description: Успешное получение ТОПа мест
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Place'
+        '400':
+          description: Неверный запрос
+        '403':
+          description: Неавторизованный доступ
+        '500':
+          description: Внутренняя ошибка сервера
+  
+                
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewPost:
+      type: object
+      properties:
+        userId:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        postId:
+          type: string
+        userId:
+          type: string
+        comment:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        repliedTo:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewComment:
+      type: object
+      properties:
+        userId:
+          type: string
+        comment:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    
+    Raiting:
+      type: object
+      properties:
+        id:
+          type: string
+        postId:
+          type: string
+        userId:
+          type: string
+        raiting:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        
+    
+    
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        senderId:
+          type: string
+        receiverId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    NewMessage:
+      type: object
+      properties:
+        senderId:
+          type: string
+        text:
+          type: string
+        attaches:
+          type: array
+          items:
+             $ref: '#/components/schemas/Attach'
+    Place:
+      type: object
+      properties:
+        country:
+          type: string
+        city:
+          type: string
+        posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    Attach:
+      type: object
+      properties:
+        link:
+          type: string
+          description: Ссылка на вложение
+          example: "https://example.com/image.jpg"
+          
