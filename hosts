@@ -1,0 +1,19 @@
+Шардирование
+subscriptions: Шардирование по following_user_id.
+users: Шардирование по id.
+Posts: Шардирование по user_id.
+Comments: Шардирование по post_id.
+Messages: Шардирование по chat_id.
+top_places: Шардирование по top_places_id.
+
+Репликация
+Для всех БД будем использовать асинхронную репликацию c несколькими мастерами(async multi-master replication) . Мастер реплики при этом будут располагаться в различных дц 
+
+
+Расчет количества хостов
+Для одного хоста будем использовать 2 диска. 
+Hosts = disks / disks_per_host 
+Hosts = 20 / 2 = 10 
+Hosts_with_replication = hosts * replication_factor 
+Hosts_with_replication = 10 * 2 = 20 
+Таким образом, при использовании репликации будет использовано примерно 20 хостов
