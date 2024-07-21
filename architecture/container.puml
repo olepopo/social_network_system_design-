@@ -1,13 +1,38 @@
 @startuml
+
+!define C4_CONTAINER
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 Person(user, "User", "A user of a social network for travelers")
-Container(container, "Core system", "Software system", "Allow users publish travel posts, view feeds, chat")
 System_Ext(geo_service, "Geo Service", "GEO-Location and mapping system")
 
 
-Rel(user, container, "Publish posts, comment, subscribe, search popular places, chat, view feeds")
-Rel(container, geo_service,"GEO-Location", "Get GEO-Location")
+Container_Boundary(c1, "Traveler Social Network") {
+    Container(webApp, "Web Application", "JavaScript, React", "Provides the social network functionality to users via web browsers")
+    Container(mobileApp, "Mobile App", "Swift/Kotlin", "Provides the social network functionality to users via mobile devices")
+    Container(loadBalancer, "Load Balancer", "Nginx", "Distributes incoming network traffic across multiple servers")
+    Container(cash, "Redis", "Redis", "Handles caching and session storage")
+    Container(TravelSocialNetworkService, "Software system", "Core system", "Publish posts, view feeds, chat")
+    ContainerDb(photoStorage, "S3", "Amazon S3", "Sorage of attachments")
+    Container(photoServer, "Photo system", "Software system", "Upload photos")
+    ContainerDb(mainDatabase, "Main Database", "PostgreSQL", "Stores user data, travel logs, and interactions")
+    }
+
+Rel(user, webApp, "Publish posts, chat, view feed", "REST")
+Rel(user, mobileApp, "Publish posts, chat, view feed", "REST")
+Rel(webApp, geo_service,"GEO-Location", "Get GEO-Location")
+Rel(mobileApp, geo_service,"GEO-Location", "Get GEO-Location")
+Rel(webApp, loadBalancer, "Forwards requests to", "HTTPS")
+Rel(mobileApp, loadBalancer, "Forwards requests to", "HTTPS")
+
+
+Rel(loadBalancer, photoServer, "Photos operatoin (upload...)", "REST")
+Rel(photoServer, photoStorage, "Photos operatoin", "")
+
+
+Rel(loadBalancer, TravelSocialNetworkService, "Publish posts, view feeds, chat", "REST")
+Rel(TravelSocialNetworkService, mainDatabase, "CRUD photos, messages, users", "SQL/TCP")
+Rel(TravelSocialNetworkService, cash, "Work with cash", "")
 
 
 @enduml
