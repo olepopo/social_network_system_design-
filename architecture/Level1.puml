@@ -1,0 +1,13 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User", "A user of a social network for travelers")
+Container(container, "Core system", "Software system", "Allow users publish travel posts, view feeds, chat")
+System_Ext(geo_service, "Geo Service", "GEO-Location and mapping system")
+
+
+Rel(user, container, "Publish posts, comment, subscribe, search popular places, chat, view feeds")
+Rel(container, geo_service,"GEO-Location", "Get GEO-Location")
+
+
+@enduml
