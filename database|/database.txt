@@ -1,0 +1,108 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table subscriptions {
+  following_user_id integer
+  followed_user_id integer
+  created_at timestamp 
+}
+
+Table users {
+  id integer [primary key]
+  name varchar
+  username varchar
+}
+
+Table posts {
+  id integer [primary key]
+  user_id integer
+  description text
+  location_id integer
+  images UUID[]
+  attaches_ids UUID[]
+  created_at timestamp
+}
+
+Table attaches {
+  id integer [primary key]
+  url TEXT
+}
+
+Table raiting {
+  id integer [primary key]
+  user_id integer
+  post_id   integer
+  raiting integer
+  created_at timestamp
+}
+
+
+Table comments {
+  id integer [primary key]
+  user_id integer
+  post_id   integer
+  comment text
+   attaches_ids UUID[]
+   replied_to integer
+  created_at timestamp
+}
+
+Table locations {
+  id integer [primary key]
+  name text
+  longitude FLOAT 
+  latitude FLOAT
+}
+
+Table top_places {
+  top_place_id integer [primary key]
+  country text
+  city text
+  post_id INTEGER
+  created_at TIMESTAMP
+  attaches_ids UUID[]
+  location_id integer
+}
+ 
+
+Table messages {
+  id integer [primary key]
+  sender_id integer
+  receiver_id integer
+  content text
+  attaches_ids UUID[]
+  created_at timestamp
+  status TEXT
+}
+
+Ref: top_places.post_id  < posts.id 
+Ref: comments.replied_to  < users.id 
+
+
+Ref: top_places.attaches_ids < attaches.id 
+
+Ref: posts.location_id > locations.id 
+Ref: top_places.location_id > locations.id 
+
+Ref: posts.id < comments.post_id 
+
+
+Ref: raiting.user_id > users.id 
+Ref: comments.user_id > users.id 
+
+Ref: posts.attaches_ids < attaches.id 
+Ref: attaches.id > comments.attaches_ids 
+
+Ref: posts.id < raiting.post_id 
+
+Ref: messages.attaches_ids < attaches.id 
+
+
+
+Ref: posts.user_id > users.id // many-to-one
+
+Ref: users.id < subscriptions.following_user_id
+Ref: users.id < subscriptions.followed_user_id
+
+Ref: users.id < messages.sender_id
+Ref: users.id < messages.receiver_id
